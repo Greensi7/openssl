@@ -13,7 +13,7 @@ IF[{- !$disabled{"fuzz-afl"} || !$disabled{"fuzz-libfuzzer"} -}]
   PROGRAMS{noinst}=pkcs12 punycode pem decoder hashtable acert
   PROGRAMS{noinst}=v3name
   PROGRAMS{noinst}=provider
-  PROGRAMS{noinst}=http_parser
+  PROGRAMS{noinst}=http_parser hpke_str2suite
 
   IF[{- !$disabled{"ml-kem"} -}]
     PROGRAMS{noinst}=ml-kem
@@ -171,6 +171,10 @@ IF[{- !$disabled{"fuzz-afl"} || !$disabled{"fuzz-libfuzzer"} -}]
   INCLUDE[http_parser]=../include {- $ex_inc -}
   DEPEND[http_parser]=../libcrypto {- $ex_lib -}
 
+  SOURCE[hpke_str2suite]=hpke_str2suite.c driver.c
+  INCLUDE[hpke_str2suite]=../include {- $ex_inc -}
+  DEPEND[hpke_str2suite]=../libcrypto {- $ex_lib -}
+
   SOURCE[ml-kem]=ml-kem.c driver.c
   INCLUDE[ml-kem]=../include {- $ex_inc -}
   DEPEND[ml-kem]=../libcrypto {- $ex_lib -}
@@ -185,7 +189,7 @@ IF[{- !$disabled{tests} -}]
   PROGRAMS{noinst}=pkcs12-test punycode-test pem-test decoder-test hashtable-test acert-test
   PROGRAMS{noinst}=v3name-test
   PROGRAMS{noinst}=provider-test
-  PROGRAMS{noinst}=http_parser-test
+  PROGRAMS{noinst}=http_parser-test hpke_str2suite-test
 
   IF[{- !$disabled{"ml-kem"} -}]
     PROGRAMS{noinst}=ml-kem-test
@@ -355,4 +359,8 @@ IF[{- !$disabled{tests} -}]
   SOURCE[http_parser-test]=http_parser.c test-corpus.c
   INCLUDE[http_parser-test]=../include
   DEPEND[http_parser-test]=../libcrypto
+
+  SOURCE[hpke_str2suite-test]=hpke_str2suite.c test-corpus.c
+  INCLUDE[hpke_str2suite-test]=../include
+  DEPEND[hpke_str2suite-test]=../libcrypto
 ENDIF
