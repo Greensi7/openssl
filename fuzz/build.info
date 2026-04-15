@@ -13,6 +13,7 @@ IF[{- !$disabled{"fuzz-afl"} || !$disabled{"fuzz-libfuzzer"} -}]
   PROGRAMS{noinst}=pkcs12 punycode pem decoder hashtable acert
   PROGRAMS{noinst}=v3name
   PROGRAMS{noinst}=provider
+  PROGRAMS{noinst}=ech_server_parser
 
   IF[{- !$disabled{"ml-kem"} -}]
     PROGRAMS{noinst}=ml-kem
@@ -166,6 +167,10 @@ IF[{- !$disabled{"fuzz-afl"} || !$disabled{"fuzz-libfuzzer"} -}]
   INCLUDE[provider]=../include {- $ex_inc -}
   DEPEND[provider]=../libcrypto {- $ex_lib -}
 
+  SOURCE[ech_server_parser]=ech_server_parser.c driver.c
+  INCLUDE[ech_server_parser]=../include {- $ex_inc -}
+  DEPEND[ech_server_parser]=../libcrypto ../libssl {- $ex_lib -}
+
   SOURCE[ml-kem]=ml-kem.c driver.c
   INCLUDE[ml-kem]=../include {- $ex_inc -}
   DEPEND[ml-kem]=../libcrypto {- $ex_lib -}
@@ -180,6 +185,7 @@ IF[{- !$disabled{tests} -}]
   PROGRAMS{noinst}=pkcs12-test punycode-test pem-test decoder-test hashtable-test acert-test
   PROGRAMS{noinst}=v3name-test
   PROGRAMS{noinst}=provider-test
+  PROGRAMS{noinst}=ech_server_parser-test
 
   IF[{- !$disabled{"ml-kem"} -}]
     PROGRAMS{noinst}=ml-kem-test
@@ -345,4 +351,8 @@ IF[{- !$disabled{tests} -}]
   SOURCE[provider-test]=provider.c test-corpus.c
   INCLUDE[provider-test]=../include
   DEPEND[provider-test]=../libcrypto
+
+  SOURCE[ech_server_parser-test]=ech_server_parser.c test-corpus.c
+  INCLUDE[ech_server_parser-test]=../include
+  DEPEND[ech_server_parser-test]=../libcrypto ../libssl
 ENDIF
