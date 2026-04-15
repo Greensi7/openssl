@@ -13,7 +13,7 @@ IF[{- !$disabled{"fuzz-afl"} || !$disabled{"fuzz-libfuzzer"} -}]
   PROGRAMS{noinst}=pkcs12 punycode pem decoder hashtable acert
   PROGRAMS{noinst}=v3name
   PROGRAMS{noinst}=provider
-  PROGRAMS{noinst}=http_parser hpke_str2suite ech_parser property_parser time_parser oid_parser ip_parser ech_server_parser
+  PROGRAMS{noinst}=http_parser hpke_str2suite ech_parser property_parser time_parser oid_parser ip_parser ech_server_parser ech_client_parser
 
   IF[{- !$disabled{"ml-kem"} -}]
     PROGRAMS{noinst}=ml-kem
@@ -199,6 +199,10 @@ IF[{- !$disabled{"fuzz-afl"} || !$disabled{"fuzz-libfuzzer"} -}]
   INCLUDE[ech_server_parser]=../include {- $ex_inc -}
   DEPEND[ech_server_parser]=../libcrypto ../libssl {- $ex_lib -}
 
+  SOURCE[ech_client_parser]=ech_client_parser.c driver.c
+  INCLUDE[ech_client_parser]=../include {- $ex_inc -}
+  DEPEND[ech_client_parser]=../libcrypto ../libssl {- $ex_lib -}
+
   SOURCE[ml-kem]=ml-kem.c driver.c
   INCLUDE[ml-kem]=../include {- $ex_inc -}
   DEPEND[ml-kem]=../libcrypto {- $ex_lib -}
@@ -213,7 +217,7 @@ IF[{- !$disabled{tests} -}]
   PROGRAMS{noinst}=pkcs12-test punycode-test pem-test decoder-test hashtable-test acert-test
   PROGRAMS{noinst}=v3name-test
   PROGRAMS{noinst}=provider-test
-  PROGRAMS{noinst}=http_parser-test hpke_str2suite-test ech_parser-test property_parser-test time_parser-test oid_parser-test ip_parser-test ech_server_parser-test
+  PROGRAMS{noinst}=http_parser-test hpke_str2suite-test ech_parser-test property_parser-test time_parser-test oid_parser-test ip_parser-test ech_server_parser-test ech_client_parser-test
 
   IF[{- !$disabled{"ml-kem"} -}]
     PROGRAMS{noinst}=ml-kem-test
@@ -411,4 +415,8 @@ IF[{- !$disabled{tests} -}]
   SOURCE[ech_server_parser-test]=ech_server_parser.c test-corpus.c
   INCLUDE[ech_server_parser-test]=../include
   DEPEND[ech_server_parser-test]=../libcrypto ../libssl
+
+  SOURCE[ech_client_parser-test]=ech_client_parser.c test-corpus.c
+  INCLUDE[ech_client_parser-test]=../include
+  DEPEND[ech_client_parser-test]=../libcrypto ../libssl
 ENDIF
