@@ -36,7 +36,7 @@ IF[{- !$disabled{"fuzz-afl"} || !$disabled{"fuzz-libfuzzer"} -}]
   ENDIF
 
   IF[{- !$disabled{"ct"} -}]
-    PROGRAMS{noinst}=ct
+    PROGRAMS{noinst}=ct tls_sct_parser
   ENDIF
 
   IF[{- !$disabled{"ocsp"} -}]
@@ -107,6 +107,10 @@ IF[{- !$disabled{"fuzz-afl"} || !$disabled{"fuzz-libfuzzer"} -}]
   SOURCE[ct]=ct.c driver.c
   INCLUDE[ct]=../include {- $ex_inc -}
   DEPEND[ct]=../libcrypto {- $ex_lib -}
+
+  SOURCE[tls_sct_parser]=tls_sct_parser.c driver.c
+  INCLUDE[tls_sct_parser]=../include {- $ex_inc -}
+  DEPEND[tls_sct_parser]=../libcrypto.a ../libssl.a {- $ex_lib -}
 
   SOURCE[dtlsclient]=dtlsclient.c driver.c fuzz_rand.c
   INCLUDE[dtlsclient]=../include {- $ex_inc -}
@@ -345,7 +349,7 @@ IF[{- !$disabled{tests} -}]
   ENDIF
 
   IF[{- !$disabled{"ct"} -}]
-    PROGRAMS{noinst}=ct-test
+    PROGRAMS{noinst}=ct-test tls_sct_parser-test
   ENDIF
 
   IF[{- !$disabled{"ocsp"} -}]
@@ -429,6 +433,10 @@ IF[{- !$disabled{tests} -}]
   SOURCE[ct-test]=ct.c test-corpus.c
   INCLUDE[ct-test]=../include
   DEPEND[ct-test]=../libcrypto
+
+  SOURCE[tls_sct_parser-test]=tls_sct_parser.c test-corpus.c
+  INCLUDE[tls_sct_parser-test]=../include
+  DEPEND[tls_sct_parser-test]=../libcrypto.a ../libssl.a
 
   SOURCE[dtlsclient-test]=dtlsclient.c test-corpus.c fuzz_rand.c
   INCLUDE[dtlsclient-test]=../include
