@@ -43,6 +43,10 @@ IF[{- !$disabled{"fuzz-afl"} || !$disabled{"fuzz-libfuzzer"} -}]
     PROGRAMS{noinst}=x509 tls_status_request_parser
   ENDIF
 
+  IF[{- !$disabled{"srtp"} -}]
+    PROGRAMS{noinst}=tls_use_srtp_parser
+  ENDIF
+
   IF[{- !$disabled{"quic"} -}]
     PROGRAMS{noinst}=quic-client quic-server quic-srtm quic-lcidm quic-rcidm
     PROGRAMS{noinst}=quic_frame_parser quic_packet_parser quic_tparam_parser
@@ -252,6 +256,10 @@ IF[{- !$disabled{"fuzz-afl"} || !$disabled{"fuzz-libfuzzer"} -}]
   INCLUDE[tls_status_request_parser]=../include {- $ex_inc -}
   DEPEND[tls_status_request_parser]=../libcrypto.a ../libssl.a {- $ex_lib -}
 
+  SOURCE[tls_use_srtp_parser]=tls_use_srtp_parser.c driver.c
+  INCLUDE[tls_use_srtp_parser]=../include {- $ex_inc -}
+  DEPEND[tls_use_srtp_parser]=../libcrypto.a ../libssl.a {- $ex_lib -}
+
   SOURCE[ml-kem]=ml-kem.c driver.c
   INCLUDE[ml-kem]=../include {- $ex_inc -}
   DEPEND[ml-kem]=../libcrypto {- $ex_lib -}
@@ -294,6 +302,10 @@ IF[{- !$disabled{tests} -}]
 
   IF[{- !$disabled{"ocsp"} -}]
     PROGRAMS{noinst}=x509-test tls_status_request_parser-test
+  ENDIF
+
+  IF[{- !$disabled{"srtp"} -}]
+    PROGRAMS{noinst}=tls_use_srtp_parser-test
   ENDIF
 
   IF[{- !$disabled{"quic"} -}]
@@ -517,4 +529,8 @@ IF[{- !$disabled{tests} -}]
   SOURCE[tls_status_request_parser-test]=tls_status_request_parser.c test-corpus.c
   INCLUDE[tls_status_request_parser-test]=../include
   DEPEND[tls_status_request_parser-test]=../libcrypto.a ../libssl.a
+
+  SOURCE[tls_use_srtp_parser-test]=tls_use_srtp_parser.c test-corpus.c
+  INCLUDE[tls_use_srtp_parser-test]=../include
+  DEPEND[tls_use_srtp_parser-test]=../libcrypto.a ../libssl.a
 ENDIF
