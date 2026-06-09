@@ -42,7 +42,7 @@ IF[{- !$disabled{"fuzz-afl"} || !$disabled{"fuzz-libfuzzer"} -}]
   ENDIF
 
   IF[{- !$disabled{"nextprotoneg"} -}]
-    PROGRAMS{noinst}=tls_npn_parser
+    PROGRAMS{noinst}=tls_npn_parser tls_next_proto_parser
   ENDIF
 
   IF[{- !$disabled{"ocsp"} -}]
@@ -121,6 +121,10 @@ IF[{- !$disabled{"fuzz-afl"} || !$disabled{"fuzz-libfuzzer"} -}]
   SOURCE[tls_npn_parser]=tls_npn_parser.c driver.c
   INCLUDE[tls_npn_parser]=../include {- $ex_inc -}
   DEPEND[tls_npn_parser]=../libcrypto.a ../libssl.a {- $ex_lib -}
+
+  SOURCE[tls_next_proto_parser]=tls_next_proto_parser.c driver.c
+  INCLUDE[tls_next_proto_parser]=../include {- $ex_inc -}
+  DEPEND[tls_next_proto_parser]=../libcrypto.a ../libssl.a {- $ex_lib -}
 
   SOURCE[dtlsclient]=dtlsclient.c driver.c fuzz_rand.c
   INCLUDE[dtlsclient]=../include {- $ex_inc -}
@@ -377,7 +381,7 @@ IF[{- !$disabled{tests} -}]
   ENDIF
 
   IF[{- !$disabled{"nextprotoneg"} -}]
-    PROGRAMS{noinst}=tls_npn_parser-test
+    PROGRAMS{noinst}=tls_npn_parser-test tls_next_proto_parser-test
   ENDIF
 
   IF[{- !$disabled{"ocsp"} -}]
@@ -469,6 +473,10 @@ IF[{- !$disabled{tests} -}]
   SOURCE[tls_npn_parser-test]=tls_npn_parser.c test-corpus.c
   INCLUDE[tls_npn_parser-test]=../include
   DEPEND[tls_npn_parser-test]=../libcrypto.a ../libssl.a
+
+  SOURCE[tls_next_proto_parser-test]=tls_next_proto_parser.c test-corpus.c
+  INCLUDE[tls_next_proto_parser-test]=../include
+  DEPEND[tls_next_proto_parser-test]=../libcrypto.a ../libssl.a
 
   SOURCE[dtlsclient-test]=dtlsclient.c test-corpus.c fuzz_rand.c
   INCLUDE[dtlsclient-test]=../include
