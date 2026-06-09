@@ -47,6 +47,10 @@ IF[{- !$disabled{"fuzz-afl"} || !$disabled{"fuzz-libfuzzer"} -}]
     PROGRAMS{noinst}=tls_use_srtp_parser
   ENDIF
 
+  IF[{- !$disabled{"srp"} -}]
+    PROGRAMS{noinst}=tls_srp_parser
+  ENDIF
+
   IF[{- !$disabled{"quic"} -}]
     PROGRAMS{noinst}=quic-client quic-server quic-srtm quic-lcidm quic-rcidm
     PROGRAMS{noinst}=quic_frame_parser quic_packet_parser quic_tparam_parser
@@ -252,6 +256,10 @@ IF[{- !$disabled{"fuzz-afl"} || !$disabled{"fuzz-libfuzzer"} -}]
   INCLUDE[tls_cert_type_parser]=../include {- $ex_inc -}
   DEPEND[tls_cert_type_parser]=../libcrypto.a ../libssl.a {- $ex_lib -}
 
+  SOURCE[tls_srp_parser]=tls_srp_parser.c driver.c
+  INCLUDE[tls_srp_parser]=../include {- $ex_inc -}
+  DEPEND[tls_srp_parser]=../libcrypto.a ../libssl.a {- $ex_lib -}
+
   SOURCE[tls_supported_groups_parser]=tls_supported_groups_parser.c driver.c
   INCLUDE[tls_supported_groups_parser]=../include {- $ex_inc -}
   DEPEND[tls_supported_groups_parser]=../libcrypto.a ../libssl.a {- $ex_lib -}
@@ -322,6 +330,10 @@ IF[{- !$disabled{tests} -}]
 
   IF[{- !$disabled{"srtp"} -}]
     PROGRAMS{noinst}=tls_use_srtp_parser-test
+  ENDIF
+
+  IF[{- !$disabled{"srp"} -}]
+    PROGRAMS{noinst}=tls_srp_parser-test
   ENDIF
 
   IF[{- !$disabled{"quic"} -}]
@@ -541,6 +553,10 @@ IF[{- !$disabled{tests} -}]
   SOURCE[tls_cert_type_parser-test]=tls_cert_type_parser.c test-corpus.c
   INCLUDE[tls_cert_type_parser-test]=../include
   DEPEND[tls_cert_type_parser-test]=../libcrypto.a ../libssl.a
+
+  SOURCE[tls_srp_parser-test]=tls_srp_parser.c test-corpus.c
+  INCLUDE[tls_srp_parser-test]=../include
+  DEPEND[tls_srp_parser-test]=../libcrypto.a ../libssl.a
 
   SOURCE[tls_supported_groups_parser-test]=tls_supported_groups_parser.c test-corpus.c
   INCLUDE[tls_supported_groups_parser-test]=../include
