@@ -50,7 +50,7 @@ IF[{- !$disabled{"fuzz-afl"} || !$disabled{"fuzz-libfuzzer"} -}]
   ENDIF
 
   IF[{- !$disabled{"srtp"} -}]
-    PROGRAMS{noinst}=tls_use_srtp_parser
+    PROGRAMS{noinst}=tls_use_srtp_parser tls_stoc_use_srtp_parser
   ENDIF
 
   IF[{- !$disabled{"srp"} -}]
@@ -346,6 +346,10 @@ IF[{- !$disabled{"fuzz-afl"} || !$disabled{"fuzz-libfuzzer"} -}]
   INCLUDE[tls_use_srtp_parser]=../include {- $ex_inc -}
   DEPEND[tls_use_srtp_parser]=../libcrypto.a ../libssl.a {- $ex_lib -}
 
+  SOURCE[tls_stoc_use_srtp_parser]=tls_stoc_use_srtp_parser.c driver.c
+  INCLUDE[tls_stoc_use_srtp_parser]=../include {- $ex_inc -}
+  DEPEND[tls_stoc_use_srtp_parser]=../libcrypto.a ../libssl.a {- $ex_lib -}
+
   SOURCE[ml-kem]=ml-kem.c driver.c
   INCLUDE[ml-kem]=../include {- $ex_inc -}
   DEPEND[ml-kem]=../libcrypto {- $ex_lib -}
@@ -397,7 +401,7 @@ IF[{- !$disabled{tests} -}]
   ENDIF
 
   IF[{- !$disabled{"srtp"} -}]
-    PROGRAMS{noinst}=tls_use_srtp_parser-test
+    PROGRAMS{noinst}=tls_use_srtp_parser-test tls_stoc_use_srtp_parser-test
   ENDIF
 
   IF[{- !$disabled{"srp"} -}]
@@ -705,4 +709,8 @@ IF[{- !$disabled{tests} -}]
   SOURCE[tls_use_srtp_parser-test]=tls_use_srtp_parser.c test-corpus.c
   INCLUDE[tls_use_srtp_parser-test]=../include
   DEPEND[tls_use_srtp_parser-test]=../libcrypto.a ../libssl.a
+
+  SOURCE[tls_stoc_use_srtp_parser-test]=tls_stoc_use_srtp_parser.c test-corpus.c
+  INCLUDE[tls_stoc_use_srtp_parser-test]=../include
+  DEPEND[tls_stoc_use_srtp_parser-test]=../libcrypto.a ../libssl.a
 ENDIF
