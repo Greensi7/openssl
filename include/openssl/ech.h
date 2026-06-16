@@ -71,60 +71,60 @@ extern "C" {
 /*
  * API calls built around OSSL_ECHSTORE
  */
-OSSL_ECHSTORE *OSSL_ECHSTORE_new(OSSL_LIB_CTX *libctx, const char *propq);
-void OSSL_ECHSTORE_free(OSSL_ECHSTORE *es);
-int OSSL_ECHSTORE_new_config(OSSL_ECHSTORE *es,
+OSSL_ECHSTORE *OSSL_ECHSTORE_new(OSSL_LIB_CTX *libctx, const char *propq); // < - only constuct
+void OSSL_ECHSTORE_free(OSSL_ECHSTORE *es); //  < - only free
+int OSSL_ECHSTORE_new_config(OSSL_ECHSTORE *es, // < ---- possible but haven't looked deeper / also doesnt look like it does much parsing or anything worth
     uint16_t echversion, uint8_t max_name_length,
     const char *public_name, OSSL_HPKE_SUITE suite);
-int OSSL_ECHSTORE_write_pem(OSSL_ECHSTORE *es, int index, BIO *out);
-int OSSL_ECHSTORE_read_echconfiglist(OSSL_ECHSTORE *es, BIO *in);
-int OSSL_ECHSTORE_get1_info(OSSL_ECHSTORE *es, int index, time_t *loaded_secs,
+int OSSL_ECHSTORE_write_pem(OSSL_ECHSTORE *es, int index, BIO *out); // < -  concates pems / not worth
+int OSSL_ECHSTORE_read_echconfiglist(OSSL_ECHSTORE *es, BIO *in); // <- part of  SSL_set1_ech_config_list (line : 127) <- fuzzed 2wice :targets ech_read_priv_echconfiglist
+int OSSL_ECHSTORE_get1_info(OSSL_ECHSTORE *es, int index, time_t *loaded_secs, // < - getter/ not worth fuzzing
     char **public_name, char **echconfig,
     int *has_private, int *for_retry);
-int OSSL_ECHSTORE_downselect(OSSL_ECHSTORE *es, int index);
-int OSSL_ECHSTORE_set1_key_and_read_pem(OSSL_ECHSTORE *es, EVP_PKEY *priv,
+int OSSL_ECHSTORE_downselect(OSSL_ECHSTORE *es, int index); // < - sort of cleanup
+int OSSL_ECHSTORE_set1_key_and_read_pem(OSSL_ECHSTORE *es, EVP_PKEY *priv, // < - redundant targets ech_read_priv_echconfiglist same as ech_parser and ech_client_parser fuzzers
     BIO *in, int for_retry);
-int OSSL_ECHSTORE_read_pem(OSSL_ECHSTORE *es, BIO *in, int for_retry);
-int OSSL_ECHSTORE_num_entries(const OSSL_ECHSTORE *es, int *numentries);
-int OSSL_ECHSTORE_num_keys(OSSL_ECHSTORE *es, int *numkeys);
-int OSSL_ECHSTORE_flush_keys(OSSL_ECHSTORE *es, time_t age);
+int OSSL_ECHSTORE_read_pem(OSSL_ECHSTORE *es, BIO *in, int for_retry); // < - redundant targets ech_read_priv_echconfiglist same as ech_parser and ech_client_parser fuzzers
+int OSSL_ECHSTORE_num_entries(const OSSL_ECHSTORE *es, int *numentries); // < - getter
+int OSSL_ECHSTORE_num_keys(OSSL_ECHSTORE *es, int *numkeys); // < - getter
+int OSSL_ECHSTORE_flush_keys(OSSL_ECHSTORE *es, time_t age); // < - cleanup
 
 /*
  * APIs relating OSSL_ECHSTORE to SSL/SSL_CTX
  */
-int SSL_CTX_set1_echstore(SSL_CTX *ctx, OSSL_ECHSTORE *es);
-int SSL_set1_echstore(SSL *s, OSSL_ECHSTORE *es);
+int SSL_CTX_set1_echstore(SSL_CTX *ctx, OSSL_ECHSTORE *es); // < - just maloc
+int SSL_set1_echstore(SSL *s, OSSL_ECHSTORE *es); // < - just maloc
 
-OSSL_ECHSTORE *SSL_CTX_get1_echstore(const SSL_CTX *ctx);
-OSSL_ECHSTORE *SSL_get1_echstore(const SSL *s);
+OSSL_ECHSTORE *SSL_CTX_get1_echstore(const SSL_CTX *ctx); // <_ getter
+OSSL_ECHSTORE *SSL_get1_echstore(const SSL *s); // < - getter
 
-int SSL_ech_set1_server_names(SSL *s, const char *inner_name,
+int SSL_ech_set1_server_names(SSL *s, const char *inner_name, // < -  just maloc
     const char *outer_name, int no_outer);
-int SSL_ech_set1_outer_server_name(SSL *s, const char *outer_name, int no_outer);
+int SSL_ech_set1_outer_server_name(SSL *s, const char *outer_name, int no_outer); //   < - just maloc
 /*
  * Note that this function returns 1 for success and 0 for error. This
  * contrasts with SSL_set1_alpn_protos() which (unusually for OpenSSL)
  * returns 0 for success and 1 on error.
  */
-int SSL_ech_set1_outer_alpn_protos(SSL *s, const unsigned char *protos,
+int SSL_ech_set1_outer_alpn_protos(SSL *s, const unsigned char *protos, // < - only maloc
     const size_t protos_len);
 
-int SSL_ech_get1_status(SSL *s, char **inner_sni, char **outer_sni);
-int SSL_ech_set1_grease_suite(SSL *s, const char *suite);
-int SSL_ech_set_grease_type(SSL *s, uint16_t type);
+int SSL_ech_get1_status(SSL *s, char **inner_sni, char **outer_sni); // < - only getter
+int SSL_ech_set1_grease_suite(SSL *s, const char *suite); // < - only suite set
+int SSL_ech_set_grease_type(SSL *s, uint16_t type); // < - only typ set
 typedef unsigned int (*SSL_ech_cb_func)(SSL *s, const char *str);
-void SSL_ech_set_callback(SSL *s, SSL_ech_cb_func f);
-int SSL_ech_get1_retry_config(SSL *s, unsigned char **ec, size_t *eclen);
+void SSL_ech_set_callback(SSL *s, SSL_ech_cb_func f); // < - only callback set
+int SSL_ech_get1_retry_config(SSL *s, unsigned char **ec, size_t *eclen); /// < - wraps OSSL_ECHSTORE_read_echconfiglist (which is fuzzed)
 
 /*
  * Note that this function returns 1 for success and 0 for error. This
  * contrasts with SSL_set1_alpn_protos() which (unusually for OpenSSL)
  * returns 0 for success and 1 on error.
  */
-int SSL_CTX_ech_set1_outer_alpn_protos(SSL_CTX *s, const unsigned char *protos,
+int SSL_CTX_ech_set1_outer_alpn_protos(SSL_CTX *s, const unsigned char *protos, // < - only maloc
     const size_t protos_len);
-void SSL_CTX_ech_set_callback(SSL_CTX *ctx, SSL_ech_cb_func f);
-int SSL_set1_ech_config_list(SSL *ssl, const uint8_t *ecl, size_t ecl_len);
+void SSL_CTX_ech_set_callback(SSL_CTX *ctx, SSL_ech_cb_func f); // < - only callback set
+int SSL_set1_ech_config_list(SSL *ssl, const uint8_t *ecl, size_t ecl_len); // < - fuzzed (kindof redundant because it just wraps OSSL_ECHSTORE_read_echconfiglist)
 
 #ifdef __cplusplus
 }

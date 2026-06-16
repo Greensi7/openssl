@@ -173,6 +173,27 @@ IF[{- !$disabled{"fuzz-afl"} || !$disabled{"fuzz-libfuzzer"} -}]
   SOURCE[ml-dsa]=ml-dsa.c driver.c
   INCLUDE[ml-dsa]=../include {- $ex_inc -}
   DEPEND[ml-dsa]=../libcrypto {- $ex_lib -}
+
+  PROGRAMS{noinst}=ech_ch_offsets
+  SOURCE[ech_ch_offsets]=ech_ch_offsets.c driver.c
+  INCLUDE[ech_ch_offsets]=../include {- $ex_inc -}
+  DEPEND[ech_ch_offsets]=../libcrypto ../libssl {- $ex_lib -}
+
+  PROGRAMS{noinst}=ech_client_parser
+  SOURCE[ech_client_parser]=ech_client_parser.c driver.c
+  INCLUDE[ech_client_parser]=../include {- $ex_inc -}
+  DEPEND[ech_client_parser]=../libcrypto ../libssl {- $ex_lib -}
+
+
+  PROGRAMS{noinst}=ech_parser
+  SOURCE[ech_parser]=ech_parser.c driver.c
+  INCLUDE[ech_parser]=../include {- $ex_inc -}
+  DEPEND[ech_parser]=../libcrypto ../libssl {- $ex_lib -}
+
+  PROGRAMS{noinst}=ech_server_parser
+  SOURCE[ech_server_parser]=ech_server_parser.c driver.c
+  INCLUDE[ech_server_parser]=../include {- $ex_inc -}
+  DEPEND[ech_server_parser]=../libcrypto ../libssl {- $ex_lib -}
 ENDIF
 
 IF[{- !$disabled{tests} -}]
@@ -345,4 +366,25 @@ IF[{- !$disabled{tests} -}]
   SOURCE[provider-test]=provider.c test-corpus.c
   INCLUDE[provider-test]=../include
   DEPEND[provider-test]=../libcrypto
+
+  PROGRAMS{noinst}=ech_ch_offsets-test
+  SOURCE[ech_ch_offsets-test]=ech_ch_offsets.c test-corpus.c
+  INCLUDE[ech_ch_offsets-test]=../include
+  DEPEND[ech_ch_offsets-test]=../libcrypto ../libssl
+
+  PROGRAMS{noinst}=ech_client_parser-test
+  SOURCE[ech_client_parser-test]=ech_client_parser.c test-corpus.c
+  INCLUDE[ech_client_parser-test]=../include
+  DEPEND[ech_client_parser-test]=../libcrypto ../libssl
+
+
+  PROGRAMS{noinst}=ech_parser-test
+  SOURCE[ech_parser-test]=ech_parser.c test-corpus.c
+  INCLUDE[ech_parser-test]=../include
+  DEPEND[ech_parser-test]=../libcrypto ../libssl
+
+  PROGRAMS{noinst}=ech_server_parser-test
+  SOURCE[ech_server_parser-test]=ech_server_parser.c test-corpus.c
+  INCLUDE[ech_server_parser-test]=../include
+  DEPEND[ech_server_parser-test]=../libcrypto ../libssl
 ENDIF
