@@ -1091,6 +1091,7 @@ OSSL_STORE_CTX *OSSL_STORE_attach(BIO *bp, const char *scheme,
         } else if (!loader_set_params(fetched_loader, loader_ctx,
                        params, propq)) {
             (void)fetched_loader->p_close(loader_ctx);
+            loader_ctx = NULL;
             OSSL_STORE_LOADER_free(fetched_loader);
             fetched_loader = NULL;
         }
@@ -1104,15 +1105,12 @@ OSSL_STORE_CTX *OSSL_STORE_attach(BIO *bp, const char *scheme,
     }
 
     if ((ctx = OPENSSL_zalloc(sizeof(*ctx))) == NULL) {
-        ERR_clear_last_mark();
-        return NULL;
+        goto err;
     }
 
     if (ui_method != NULL
         && !ossl_pw_set_ui_method(&ctx->pwdata, ui_method, ui_data)) {
-        ERR_clear_last_mark();
-        OPENSSL_free(ctx);
-        return NULL;
+        goto err;
     }
 
     ctx->fetched_loader = fetched_loader;
@@ -1129,4 +1127,28 @@ OSSL_STORE_CTX *OSSL_STORE_attach(BIO *bp, const char *scheme,
     ERR_pop_to_mark();
 
     return ctx;
+
+err:
+    ERR_clear_last_mark();
+    if (loader_ctx != NULL) {
+        /*
+         * Temporary structure so OSSL_STORE_close() can work even when
+         * |ctx| couldn't be allocated or initialized properly.
+         */
+        OSSL_STORE_CTX tmpctx = {
+            NULL,
+        };
+
+        tmpctx.fetched_loader = fetched_loader;
+        tmpctx.loader = loader;
+        tmpctx.loader_ctx = loader_ctx;
+
+        /* We return NULL regardless of an error while closing. */
+        (void)ossl_store_close_it(&tmpctx);
+    }
+    /* Coverity false positive, the reference counting is confusing it */
+    /* coverity[pass_freed_arg] */
+    OSSL_STORE_LOADER_free(fetched_loader);
+    OPENSSL_free(ctx);
+    return NULL;
 }

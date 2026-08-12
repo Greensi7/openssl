@@ -127,6 +127,10 @@ err:
         X509_free(*cert);
         *cert = NULL;
     }
+    if (ca != NULL) {
+        OSSL_STACK_OF_X509_free(*ca);
+        *ca = NULL;
+    }
     X509_free(x);
     OSSL_STACK_OF_X509_free(ocerts);
     return 0;
