@@ -11,7 +11,7 @@
 IF[{- !$disabled{"fuzz-afl"} || !$disabled{"fuzz-libfuzzer"} -}]
   PROGRAMS{noinst}=asn1 asn1parse bignum bndiv client conf crl server smime
   PROGRAMS{noinst}=pkcs7_verify
-  PROGRAMS{noinst}=pkcs12 punycode pem decoder hashtable acert
+  PROGRAMS{noinst}=pkcs12 punycode pem decoder evp_pkey hashtable acert
   PROGRAMS{noinst}=v3name
   PROGRAMS{noinst}=provider
 
@@ -123,6 +123,10 @@ IF[{- !$disabled{"fuzz-afl"} || !$disabled{"fuzz-libfuzzer"} -}]
   INCLUDE[decoder]=../include {- $ex_inc -}
   DEPEND[decoder]=../libcrypto {- $ex_lib -}
 
+  SOURCE[evp_pkey]=evp_pkey.c driver.c
+  INCLUDE[evp_pkey]=../include {- $ex_inc -}
+  DEPEND[evp_pkey]=../libcrypto {- $ex_lib -}
+
   SOURCE[hashtable]=hashtable.c driver.c
   INCLUDE[hashtable]=../include {- $ex_inc -}
   DEPEND[hashtable]=../libcrypto {- $ex_lib -}
@@ -193,7 +197,7 @@ IF[{- !$disabled{tests} -}]
 
   PROGRAMS{noinst}=asn1-test asn1parse-test bignum-test bndiv-test client-test conf-test crl-test server-test smime-test
   PROGRAMS{noinst}=pkcs7_verify-test
-  PROGRAMS{noinst}=pkcs12-test punycode-test pem-test decoder-test hashtable-test acert-test
+  PROGRAMS{noinst}=pkcs12-test punycode-test pem-test decoder-test evp_pkey-test hashtable-test acert-test
   PROGRAMS{noinst}=v3name-test
   PROGRAMS{noinst}=provider-test
 
@@ -317,6 +321,10 @@ IF[{- !$disabled{tests} -}]
   SOURCE[decoder-test]=decoder.c $FUZZTESTSRC fuzz_rand.c
   INCLUDE[decoder-test]=../include ../test/mfail
   DEPEND[decoder-test]=../libcrypto.a
+
+  SOURCE[evp_pkey-test]=evp_pkey.c $FUZZTESTSRC
+  INCLUDE[evp_pkey-test]=../include ../test/mfail
+  DEPEND[evp_pkey-test]=../libcrypto.a
 
   SOURCE[hashtable-test]=hashtable.c $FUZZTESTSRC fuzz_rand.c
   INCLUDE[hashtable-test]=../include ../test/mfail
