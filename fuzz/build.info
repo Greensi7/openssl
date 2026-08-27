@@ -11,8 +11,8 @@
 IF[{- !$disabled{"fuzz-afl"} || !$disabled{"fuzz-libfuzzer"} -}]
   PROGRAMS{noinst}=asn1 asn1parse bignum bndiv client conf crl server smime
   PROGRAMS{noinst}=pkcs7_verify
-  PROGRAMS{noinst}=pkcs12 punycode pem decoder evp_pkey hashtable acert
-  PROGRAMS{noinst}=v3name
+  PROGRAMS{noinst}=pkcs12 punycode pem decoder evp_pkey ssl_session hashtable acert
+  PROGRAMS{noinst}=v3name x509_req
   PROGRAMS{noinst}=provider
 
   IF[{- !$disabled{"ml-kem"} -}]
@@ -127,6 +127,10 @@ IF[{- !$disabled{"fuzz-afl"} || !$disabled{"fuzz-libfuzzer"} -}]
   INCLUDE[evp_pkey]=../include {- $ex_inc -}
   DEPEND[evp_pkey]=../libcrypto {- $ex_lib -}
 
+  SOURCE[ssl_session]=ssl_session.c driver.c
+  INCLUDE[ssl_session]=../include {- $ex_inc -}
+  DEPEND[ssl_session]=../libcrypto ../libssl {- $ex_lib -}
+
   SOURCE[hashtable]=hashtable.c driver.c
   INCLUDE[hashtable]=../include {- $ex_inc -}
   DEPEND[hashtable]=../libcrypto {- $ex_lib -}
@@ -150,6 +154,10 @@ IF[{- !$disabled{"fuzz-afl"} || !$disabled{"fuzz-libfuzzer"} -}]
   SOURCE[v3name]=v3name.c driver.c
   INCLUDE[v3name]=../include {- $ex_inc -}
   DEPEND[v3name]=../libcrypto.a {- $ex_lib -}
+
+  SOURCE[x509_req]=x509_req.c driver.c
+  INCLUDE[x509_req]=../include {- $ex_inc -}
+  DEPEND[x509_req]=../libcrypto {- $ex_lib -}
 
   SOURCE[quic-client]=quic-client.c driver.c fuzz_rand.c
   INCLUDE[quic-client]=../include {- $ex_inc -}
@@ -197,8 +205,8 @@ IF[{- !$disabled{tests} -}]
 
   PROGRAMS{noinst}=asn1-test asn1parse-test bignum-test bndiv-test client-test conf-test crl-test server-test smime-test
   PROGRAMS{noinst}=pkcs7_verify-test
-  PROGRAMS{noinst}=pkcs12-test punycode-test pem-test decoder-test evp_pkey-test hashtable-test acert-test
-  PROGRAMS{noinst}=v3name-test
+  PROGRAMS{noinst}=pkcs12-test punycode-test pem-test decoder-test evp_pkey-test ssl_session-test hashtable-test acert-test
+  PROGRAMS{noinst}=v3name-test x509_req-test
   PROGRAMS{noinst}=provider-test
 
   IF[{- !$disabled{"ml-kem"} -}]
@@ -326,6 +334,10 @@ IF[{- !$disabled{tests} -}]
   INCLUDE[evp_pkey-test]=../include ../test/mfail
   DEPEND[evp_pkey-test]=../libcrypto.a
 
+  SOURCE[ssl_session-test]=ssl_session.c $FUZZTESTSRC
+  INCLUDE[ssl_session-test]=../include ../test/mfail
+  DEPEND[ssl_session-test]=../libcrypto.a ../libssl.a
+
   SOURCE[hashtable-test]=hashtable.c $FUZZTESTSRC fuzz_rand.c
   INCLUDE[hashtable-test]=../include ../test/mfail
   DEPEND[hashtable-test]=../libcrypto.a
@@ -349,6 +361,10 @@ IF[{- !$disabled{tests} -}]
   SOURCE[v3name-test]=v3name.c $FUZZTESTSRC
   INCLUDE[v3name-test]=../include ../test/mfail
   DEPEND[v3name-test]=../libcrypto.a
+
+  SOURCE[x509_req-test]=x509_req.c $FUZZTESTSRC
+  INCLUDE[x509_req-test]=../include ../test/mfail
+  DEPEND[x509_req-test]=../libcrypto.a
 
   SOURCE[quic-client-test]=quic-client.c $FUZZTESTSRC fuzz_rand.c
   INCLUDE[quic-client-test]=../include ../test/mfail
